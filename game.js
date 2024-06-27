@@ -2,6 +2,7 @@ const canvas = document.getElementById('mazeCanvas');
 const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
+const replayButton = document.getElementById('replayButton');
 
 const tileSize = 50;
 const rows = canvas.height / tileSize;
@@ -118,6 +119,7 @@ function startTimer() {
 function gameOver() {
     alert(`Time's up! Your final score is: ${score}`);
     window.removeEventListener('keydown', handleKeydown); // Disable player movement after game over
+    replayButton.style.display = 'block'; // Show the replay button
 }
 
 function handleKeydown(e) {
@@ -153,6 +155,8 @@ function resetGame() {
     clearInterval(appleInterval);
     startTimer();
     appleInterval = setInterval(generateApple, 3000);
+    replayButton.style.display = 'none'; // Hide the replay button
+    window.addEventListener('keydown', handleKeydown); // Re-enable player movement
 }
 
 resetGame();
