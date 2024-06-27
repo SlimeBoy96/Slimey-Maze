@@ -160,3 +160,23 @@ function resetGame() {
 }
 
 resetGame();
+// Function to reset the game
+function resetGame() {
+    // Reset game state variables
+    // Adjust these based on your game's variables and initial state
+    playerPosition = { x: 0, y: 0 };
+    score = 0;
+
+    // Redraw or reinitialize the game board
+    // Call your existing function to set up the game
+    initializeGame();
+}
+
+// Event listener for the replay button
+document.getElementById('replayButton').addEventListener('click', resetGame);
+
+// Example initializeGame function
+function initializeGame() {
+    // Your game initialization logic here
+    console.log("Game initialized");
+}
