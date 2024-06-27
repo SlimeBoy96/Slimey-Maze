@@ -3,6 +3,9 @@ const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
 const replayButton = document.getElementById('replayButton');
+const loginContainer = document.getElementById('loginContainer');
+const gameContainer = document.getElementById('gameContainer');
+const scoreboard = document.getElementById('scoreboard');
 
 const tileSize = 50;
 const rows = canvas.height / tileSize;
@@ -15,6 +18,7 @@ let score = 0;
 let timeLeft = 30;
 let timerInterval;
 let appleInterval;
+let currentUsername = '';
 
 function initMaze() {
     maze = Array.from({ length: rows }, () => Array(cols).fill(1));
@@ -118,6 +122,7 @@ function startTimer() {
 
 function gameOver() {
     alert(`Time's up! Your final score is: ${score}`);
+    submitScore();
     window.removeEventListener('keydown', handleKeydown); // Disable player movement after game over
     replayButton.style.display = 'block'; // Show the replay button
 }
@@ -157,6 +162,70 @@ function resetGame() {
     appleInterval = setInterval(generateApple, 3000);
     replayButton.style.display = 'none'; // Hide the replay button
     window.addEventListener('keydown', handleKeydown); // Re-enable player movement
+}
+
+function register() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    fetch('http://localhost:3000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+        });
+}
+
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Login successful') {
+                currentUsername = username;
+                loginContainer.style.display = 'none';
+                gameContainer.style.display = 'block';
+                resetGame();
+                loadScores();
+            } else {
+                alert(data.message);
+            }
+        });
+}
+
+function submitScore() {
+    fetch('http://localhost:3000/submit-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: currentUsername, score })
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            loadScores();
+        });
+}
+
+function loadScores() {
+    fetch('http://localhost:3000/scores')
+        .then(response => response.json())
+        .then(data => {
+            scoreboard.innerHTML = '';
+            data.forEach(score => {
+                const li = document.createElement('li');
+                li.textContent = `${score.username}: ${score.score}`;
+                scoreboard.appendChild(li);
+            });
+        });
 }
 
 resetGame();
