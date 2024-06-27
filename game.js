@@ -146,7 +146,7 @@ function resetGame() {
     scoreDisplay.textContent = score;
     timerDisplay.textContent = timeLeft;
     generateMaze();
-    apples = [1];
+    apples = [];
     drawMaze();
     drawPlayer();
     clearInterval(timerInterval);
