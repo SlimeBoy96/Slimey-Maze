@@ -11,3 +11,11 @@ body {
 canvas {
     border: 2px solid black;
 }
+
+.hidden {
+    display: none;
+}
+
+#winScreen {
+    text-align: center;
+}
