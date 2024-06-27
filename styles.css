@@ -12,7 +12,7 @@ canvas {
     border: 2px solid black;
 }
 
-#score {
+#score, #timer {
     font-size: 24px;
     font-weight: bold;
 }
