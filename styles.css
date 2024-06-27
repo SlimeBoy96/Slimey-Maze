@@ -16,3 +16,10 @@ canvas {
     font-size: 24px;
     font-weight: bold;
 }
+
+#replayButton {
+    display: none;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+}
