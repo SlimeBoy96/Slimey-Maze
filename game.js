@@ -12,7 +12,7 @@ let maze = [];
 let player = { x: 1, y: 1 };
 let apples = [];
 let score = 0;
-let timeLeft = 30;
+let timeLeft = 60;
 let timerInterval;
 let appleInterval;
 
