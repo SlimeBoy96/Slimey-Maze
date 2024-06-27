@@ -1,8 +1,5 @@
 const canvas = document.getElementById('mazeCanvas');
 const ctx = canvas.getContext('2d');
-const winScreen = document.getElementById('winScreen');
-const replayButton = document.getElementById('replayButton');
-const nextLevelButton = document.getElementById('nextLevelButton');
 
 const tileSize = 50;
 const rows = canvas.height / tileSize;
@@ -10,8 +7,6 @@ const cols = canvas.width / tileSize;
 
 let maze = [];
 let player = { x: 1, y: 1 };
-let level = 1;
-let goal = { x: cols - 2, y: rows - 2 };
 
 function initMaze() {
     maze = Array.from({ length: rows }, () => Array(cols).fill(1));
@@ -55,10 +50,6 @@ function drawMaze() {
             }
         }
     }
-
-    // Draw goal
-    ctx.fillStyle = 'green';
-    ctx.fillRect(goal.x * tileSize, goal.y * tileSize, tileSize, tileSize);
 }
 
 function drawPlayer() {
@@ -72,38 +63,8 @@ function movePlayer(dx, dy) {
         player.y += dy;
         drawMaze();
         drawPlayer();
-        checkWin();
     }
 }
-
-function checkWin() {
-    if (player.x === goal.x && player.y === goal.y) {
-        winScreen.classList.remove('hidden');
-    }
-}
-
-function resetGame() {
-    player = { x: 1, y: 1 };
-    generateMaze();
-    drawMaze();
-    drawPlayer();
-}
-
-function nextLevel() {
-    level++;
-    goal = { x: cols - 2, y: rows - 2 };
-    resetGame();
-}
-
-replayButton.addEventListener('click', function () {
-    winScreen.classList.add('hidden');
-    resetGame();
-});
-
-nextLevelButton.addEventListener('click', function () {
-    winScreen.classList.add('hidden');
-    nextLevel();
-});
 
 window.addEventListener('keydown', function (e) {
     switch (e.key) {
@@ -122,4 +83,6 @@ window.addEventListener('keydown', function (e) {
     }
 });
 
-resetGame();
+generateMaze();
+drawMaze();
+drawPlayer();
