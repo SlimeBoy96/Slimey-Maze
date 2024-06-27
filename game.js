@@ -1,6 +1,7 @@
 const canvas = document.getElementById('mazeCanvas');
 const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('score');
+const timerDisplay = document.getElementById('timer');
 
 const tileSize = 50;
 const rows = canvas.height / tileSize;
@@ -10,6 +11,9 @@ let maze = [];
 let player = { x: 1, y: 1 };
 let apples = [];
 let score = 0;
+let timeLeft = 30;
+let timerInterval;
+let appleInterval;
 
 function initMaze() {
     maze = Array.from({ length: rows }, () => Array(cols).fill(1));
@@ -42,16 +46,15 @@ function generateMaze() {
     carveMaze(1, 1);
 }
 
-function generateApples() {
-    apples = [];
-    for (let i = 0; i < 5; i++) {
-        let apple = { x: 0, y: 0 };
-        do {
-            apple.x = Math.floor(Math.random() * cols);
-            apple.y = Math.floor(Math.random() * rows);
-        } while (maze[apple.y][apple.x] !== 0 || (apple.x === player.x && apple.y === player.y));
-        apples.push(apple);
-    }
+function generateApple() {
+    let apple = { x: 0, y: 0 };
+    do {
+        apple.x = Math.floor(Math.random() * cols);
+        apple.y = Math.floor(Math.random() * rows);
+    } while (maze[apple.y][apple.x] !== 0 || (apple.x === player.x && apple.y === player.y));
+    apples.push(apple);
+    drawMaze();
+    drawPlayer();
 }
 
 function drawMaze() {
@@ -100,6 +103,22 @@ function collectApple() {
     }
 }
 
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            clearInterval(appleInterval);
+            gameOver();
+        }
+    }, 1000);
+}
+
+function gameOver() {
+    alert(`Time's up! Your final score is: ${score}`);
+}
+
 window.addEventListener('keydown', function (e) {
     switch (e.key) {
         case 'ArrowUp':
@@ -120,11 +139,17 @@ window.addEventListener('keydown', function (e) {
 function resetGame() {
     player = { x: 1, y: 1 };
     score = 0;
+    timeLeft = 30;
     scoreDisplay.textContent = score;
+    timerDisplay.textContent = timeLeft;
     generateMaze();
-    generateApples();
+    apples = [];
     drawMaze();
     drawPlayer();
+    clearInterval(timerInterval);
+    clearInterval(appleInterval);
+    startTimer();
+    appleInterval = setInterval(generateApple, 3000);
 }
 
 resetGame();
