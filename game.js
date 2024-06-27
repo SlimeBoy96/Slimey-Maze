@@ -1,11 +1,5 @@
 const canvas = document.getElementById('mazeCanvas');
 const ctx = canvas.getContext('2d');
-const scoreDisplay = document.getElementById('score');
-const timerDisplay = document.getElementById('timer');
-const replayButton = document.getElementById('replayButton');
-const loginContainer = document.getElementById('loginContainer');
-const gameContainer = document.getElementById('gameContainer');
-const scoreboard = document.getElementById('scoreboard');
 
 const tileSize = 50;
 const rows = canvas.height / tileSize;
@@ -13,12 +7,6 @@ const cols = canvas.width / tileSize;
 
 let maze = [];
 let player = { x: 1, y: 1 };
-let apples = [];
-let score = 0;
-let timeLeft = 30;
-let timerInterval;
-let appleInterval;
-let currentUsername = '';
 
 function initMaze() {
     maze = Array.from({ length: rows }, () => Array(cols).fill(1));
@@ -51,17 +39,6 @@ function generateMaze() {
     carveMaze(1, 1);
 }
 
-function generateApple() {
-    let apple = { x: 0, y: 0 };
-    do {
-        apple.x = Math.floor(Math.random() * cols);
-        apple.y = Math.floor(Math.random() * rows);
-    } while (maze[apple.y][apple.x] !== 0 || (apple.x === player.x && apple.y === player.y));
-    apples.push(apple);
-    drawMaze();
-    drawPlayer();
-}
-
 function drawMaze() {
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
@@ -73,13 +50,6 @@ function drawMaze() {
             }
         }
     }
-
-    apples.forEach(apple => {
-        ctx.fillStyle = 'green';
-        ctx.beginPath();
-        ctx.arc(apple.x * tileSize + tileSize / 2, apple.y * tileSize + tileSize / 2, tileSize / 4, 0, Math.PI * 2);
-        ctx.fill();
-    });
 }
 
 function drawPlayer() {
@@ -93,41 +63,10 @@ function movePlayer(dx, dy) {
         player.y += dy;
         drawMaze();
         drawPlayer();
-        collectApple();
     }
 }
 
-function collectApple() {
-    for (let i = 0; i < apples.length; i++) {
-        if (player.x === apples[i].x && player.y === apples[i].y) {
-            apples.splice(i, 1);
-            score++;
-            scoreDisplay.textContent = score;
-            break;
-        }
-    }
-}
-
-function startTimer() {
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        timerDisplay.textContent = timeLeft;
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            clearInterval(appleInterval);
-            gameOver();
-        }
-    }, 1000);
-}
-
-function gameOver() {
-    alert(`Time's up! Your final score is: ${score}`);
-    submitScore();
-    window.removeEventListener('keydown', handleKeydown); // Disable player movement after game over
-    replayButton.style.display = 'block'; // Show the replay button
-}
-
-function handleKeydown(e) {
+window.addEventListener('keydown', function (e) {
     switch (e.key) {
         case 'ArrowUp':
             movePlayer(0, -1);
@@ -142,90 +81,8 @@ function handleKeydown(e) {
             movePlayer(1, 0);
             break;
     }
-}
+});
 
-window.addEventListener('keydown', handleKeydown);
-
-function resetGame() {
-    player = { x: 1, y: 1 };
-    score = 0;
-    timeLeft = 30;
-    scoreDisplay.textContent = score;
-    timerDisplay.textContent = timeLeft;
-    generateMaze();
-    apples = [];
-    drawMaze();
-    drawPlayer();
-    clearInterval(timerInterval);
-    clearInterval(appleInterval);
-    startTimer();
-    appleInterval = setInterval(generateApple, 3000);
-    replayButton.style.display = 'none'; // Hide the replay button
-    window.addEventListener('keydown', handleKeydown); // Re-enable player movement
-}
-
-function register() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-
-    fetch('http://localhost:3000/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-        });
-}
-
-function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-
-    fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message === 'Login successful') {
-                currentUsername = username;
-                loginContainer.style.display = 'none';
-                gameContainer.style.display = 'block';
-                resetGame();
-                loadScores();
-            } else {
-                alert(data.message);
-            }
-        });
-}
-
-function submitScore() {
-    fetch('http://localhost:3000/submit-score', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: currentUsername, score })
-    })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            loadScores();
-        });
-}
-
-function loadScores() {
-    fetch('http://localhost:3000/scores')
-        .then(response => response.json())
-        .then(data => {
-            scoreboard.innerHTML = '';
-            data.forEach(score => {
-                const li = document.createElement('li');
-                li.textContent = `${score.username}: ${score.score}`;
-                scoreboard.appendChild(li);
-            });
-        });
-}
-
-resetGame();
+generateMaze();
+drawMaze();
+drawPlayer();
