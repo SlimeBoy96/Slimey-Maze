@@ -117,9 +117,10 @@ function startTimer() {
 
 function gameOver() {
     alert(`Time's up! Your final score is: ${score}`);
+    window.removeEventListener('keydown', handleKeydown); // Disable player movement after game over
 }
 
-window.addEventListener('keydown', function (e) {
+function handleKeydown(e) {
     switch (e.key) {
         case 'ArrowUp':
             movePlayer(0, -1);
@@ -134,7 +135,9 @@ window.addEventListener('keydown', function (e) {
             movePlayer(1, 0);
             break;
     }
-});
+}
+
+window.addEventListener('keydown', handleKeydown);
 
 function resetGame() {
     player = { x: 1, y: 1 };
