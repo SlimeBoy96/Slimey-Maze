@@ -8,20 +8,7 @@
 </head>
 <body>
     <h1>Maze Game</h1>
-    <div id="loginContainer">
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="register()">Register</button>
-        <button onclick="login()">Login</button>
-    </div>
-    <div id="gameContainer" style="display: none;">
-        <p>Score: <span id="score">0</span></p>
-        <p>Time: <span id="timer">30</span> seconds</p>
-        <canvas id="mazeCanvas" width="500" height="500"></canvas>
-        <button id="replayButton" onclick="resetGame()">Replay</button>
-        <h2>Scoreboard</h2>
-        <ul id="scoreboard"></ul>
-    </div>
+    <canvas id="mazeCanvas" width="500" height="500"></canvas>
     <script src="game.js"></script>
 </body>
 </html>
