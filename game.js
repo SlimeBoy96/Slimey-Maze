@@ -1,5 +1,6 @@
 const canvas = document.getElementById('mazeCanvas');
 const ctx = canvas.getContext('2d');
+const scoreDisplay = document.getElementById('score');
 
 const tileSize = 50;
 const rows = canvas.height / tileSize;
@@ -7,6 +8,8 @@ const cols = canvas.width / tileSize;
 
 let maze = [];
 let player = { x: 1, y: 1 };
+let apples = [];
+let score = 0;
 
 function initMaze() {
     maze = Array.from({ length: rows }, () => Array(cols).fill(1));
@@ -39,6 +42,18 @@ function generateMaze() {
     carveMaze(1, 1);
 }
 
+function generateApples() {
+    apples = [];
+    for (let i = 0; i < 5; i++) {
+        let apple = { x: 0, y: 0 };
+        do {
+            apple.x = Math.floor(Math.random() * cols);
+            apple.y = Math.floor(Math.random() * rows);
+        } while (maze[apple.y][apple.x] !== 0 || (apple.x === player.x && apple.y === player.y));
+        apples.push(apple);
+    }
+}
+
 function drawMaze() {
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
@@ -50,6 +65,13 @@ function drawMaze() {
             }
         }
     }
+
+    apples.forEach(apple => {
+        ctx.fillStyle = 'green';
+        ctx.beginPath();
+        ctx.arc(apple.x * tileSize + tileSize / 2, apple.y * tileSize + tileSize / 2, tileSize / 4, 0, Math.PI * 2);
+        ctx.fill();
+    });
 }
 
 function drawPlayer() {
@@ -63,6 +85,18 @@ function movePlayer(dx, dy) {
         player.y += dy;
         drawMaze();
         drawPlayer();
+        collectApple();
+    }
+}
+
+function collectApple() {
+    for (let i = 0; i < apples.length; i++) {
+        if (player.x === apples[i].x && player.y === apples[i].y) {
+            apples.splice(i, 1);
+            score++;
+            scoreDisplay.textContent = score;
+            break;
+        }
     }
 }
 
@@ -83,6 +117,14 @@ window.addEventListener('keydown', function (e) {
     }
 });
 
-generateMaze();
-drawMaze();
-drawPlayer();
+function resetGame() {
+    player = { x: 1, y: 1 };
+    score = 0;
+    scoreDisplay.textContent = score;
+    generateMaze();
+    generateApples();
+    drawMaze();
+    drawPlayer();
+}
+
+resetGame();
